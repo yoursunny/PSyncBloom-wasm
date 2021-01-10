@@ -4,14 +4,18 @@
 #include <cstdint>
 #include <string>
 
-using HashFunction = uint32_t (*)(uint32_t seed, uint32_t data, uint32_t size);
+using HashFunction = void (*)(uint32_t resultPtr, uint32_t seedPtr, uint32_t inputPtr,
+                              uint32_t inputSize);
 
 extern HashFunction hash;
 
 inline uint32_t
-murmurHash3(uint32_t seed, const std::string& s)
+murmurHash3(uint32_t seed, const std::string& input)
 {
-  return (*hash)(seed, reinterpret_cast<uintptr_t>(s.data()), s.size());
+  uint32_t result = 0;
+  (*hash)(reinterpret_cast<uintptr_t>(&result), reinterpret_cast<uintptr_t>(&seed),
+          reinterpret_cast<uintptr_t>(input.data()), input.size());
+  return result;
 }
 
 #endif // PSYNCBLOOM_UTIL_HPP

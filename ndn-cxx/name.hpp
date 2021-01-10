@@ -21,15 +21,14 @@ public:
 
 } // namespace ndn
 
-class Name : public std::string
+class Name : public std::vector<uint8_t>
 {
 public:
   void appendNumber(uint64_t) {}
 
-  void append(std::vector<uint8_t>::const_iterator first, std::vector<uint8_t>::const_iterator last)
+  void append(const_iterator first, const_iterator last)
   {
-    resize(std::distance(first, last));
-    std::copy(first, last, reinterpret_cast<uint8_t*>(data()));
+    std::copy(first, last, std::back_inserter(*this));
   }
 };
 

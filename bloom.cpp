@@ -27,21 +27,29 @@ public:
     return Bloom(pec, dfpp, comp);
   }
 
-  std::string encode() const
+  uint32_t encode() const
   {
     ndn::Name name;
     appendToName(name);
-    return std::move(name);
+    void* m = std::malloc(sizeof(uint32_t) + name.size());
+    std::copy(name.begin(), name.end(), reinterpret_cast<uint8_t*>(m) + 4);
+    *reinterpret_cast<uint32_t*>(m) = name.size();
+    return reinterpret_cast<uintptr_t>(m);
   }
 
-  void insert2(std::string s)
+  void clear()
   {
-    insert(s);
+    BloomFilter::clear();
   }
 
-  bool contains2(std::string s) const
+  void insert(const std::string& s)
   {
-    return contains(s);
+    BloomFilter::insert(s);
+  }
+
+  bool contains(const std::string& s) const
+  {
+    return BloomFilter::contains(s);
   }
 };
 
@@ -54,6 +62,6 @@ EMSCRIPTEN_BINDINGS(bloom)
     .class_function("decode", &Bloom::decode)
     .function("encode", &Bloom::encode)
     .function("clear", &Bloom::clear)
-    .function("insert", &Bloom::insert2)
-    .function("contains", &Bloom::contains2);
+    .function("insert", &Bloom::insert)
+    .function("contains", &Bloom::contains);
 }
