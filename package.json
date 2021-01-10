@@ -21,7 +21,7 @@
     "build": "tsc -b",
     "lint": "xo --fix",
     "pnpm-install": "pnpm install --shamefully-hoist",
-    "test": "ava"
+    "test": "ava test.js"
   },
   "devDependencies": {
     "@yoursunny/xo-config": "^0.36.1",
