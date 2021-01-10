@@ -1,5 +1,5 @@
 {
-  "name": "@ndn/psync-bloom",
+  "name": "@yoursunny/psync-bloom",
   "version": "0.0.0",
   "private": true,
   "description": "PSync Bloom Filter via WebAssembly",
