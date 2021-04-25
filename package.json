@@ -8,10 +8,13 @@
   "files": [
     "main.d.ts",
     "bloom.js",
-    "bloom.wasm"
+    "web.js"
   ],
   "type": "commonjs",
   "main": "main.js",
+  "browser": {
+    "./bloom.js": "./web.js"
+  },
   "homepage": "https://github.com/yoursunny/PSyncBloom-wasm",
   "repository": {
     "type": "git",
