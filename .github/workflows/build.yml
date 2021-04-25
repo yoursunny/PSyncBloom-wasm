@@ -1,14 +1,16 @@
 name: build
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
 
 jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
-      - uses: mymindstorm/setup-emsdk@v7
+      - uses: mymindstorm/setup-emsdk@v8
         with:
-          version: 2.0.12
+          version: 2.0.18
           actions-cache-folder: emsdk-cache
       - uses: actions/setup-node@v2
         with:
@@ -16,6 +18,7 @@ jobs:
       - run: npm install
       - name: check code style
         run: |
+          sudo apt install --no-install-recommends clang-format-8
           make lint
           npm run lint
           [[ $(git status --porcelain | tee >(cat 1>&2) | wc -l) -eq 0 ]]
@@ -31,6 +34,7 @@ jobs:
         with:
           target_branch: build
           build_dir: ./package/
-          commit_message: ${{ github.sha }} ${{ github.run_id }}-${{ github.run_number }}
+          commit_message: ${{ github.sha }} ${{ github.run_id }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if: ${{ github.event_name == 'push' }}

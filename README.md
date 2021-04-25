@@ -3,7 +3,7 @@
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/yoursunny/PSyncBloom-wasm/build)](https://github.com/yoursunny/PSyncBloom-wasm/actions) [![GitHub code size](https://img.shields.io/github/languages/code-size/yoursunny/PSyncBloom-wasm?style=flat&logo=GitHub)](https://github.com/yoursunny/PSyncBloom-wasm)
 
 `@yoursunny/psync-bloom` package is the Bloom Filter library extracted from [PSync C++ library](https://github.com/named-data/PSync) and compiled to WebAssembly.
-This package may be used in JavaScript projects to interact with the Partial Synchronization functionality of the the PSync library.
+This package may be used in JavaScript projects to interact with the Partial Synchronization functionality of the PSync library.
 
 Compiled package is automatically pushed to `build` branch.
 To install this package, include the following in `package.json`:

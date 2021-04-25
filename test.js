@@ -37,6 +37,9 @@ test("simple", async (t) => {
   t.true(nFalsePositives < 2);
 
   const wireA = bfA.encode();
+  bfA.dispose();
+  t.throws(() => bfA.clear());
+
   const bfB = await BloomFilter.create({
     hash,
     projectedElementCount: 100,
@@ -47,6 +50,7 @@ test("simple", async (t) => {
   bfB.clear();
   t.false(bfB.contains("string 0"));
   t.false(bfB.contains(Uint8Array.of(0x00, 0xBE, 0xEF)));
+  bfB.dispose();
 
   const bfC = await BloomFilter.create({
     hash,
@@ -54,4 +58,26 @@ test("simple", async (t) => {
     falsePositiveProbability: 0.001,
   });
   t.not(bfC.encode().length, wireA.length);
+  bfC.dispose();
+});
+
+test("memory leak", async (t) => {
+  const filters = [];
+  for (let i = 0; i < 100; ++i) {
+    filters.push(await BloomFilter.create({
+      hash,
+      projectedElementCount: 100,
+      falsePositiveProbability: 0.001,
+    }));
+
+    while (filters.length >= 5) {
+      filters.shift().dispose();
+    }
+
+    t.assert(process.listenerCount("unhandledRejection") <= process.getMaxListeners());
+  }
+
+  while (filters.length > 0) {
+    filters.shift().dispose();
+  }
 });
