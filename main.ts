@@ -1,5 +1,5 @@
-// @ts-expect-error
-import openWasmModule = require("./bloom.js");
+// @ts-expect-error emscripten build output has no typing
+import openWasmModule = require("./bloom.js"); // eslint-disable-line @typescript-eslint/no-require-imports
 
 /** 32-bit hash function. */
 export type HashFunction = (seed: number, input: Uint8Array) => number;
@@ -45,13 +45,13 @@ export class BloomFilter {
   }
 
   /** Insert a value to the Bloom filter. */
-  public insert(s: string|Uint8Array): void {
+  public insert(s: string | Uint8Array): void {
     this.throwIfDisposed();
     this.c.insert(s);
   }
 
   /** Determine whether the Bloom filter probably contains a value. */
-  public contains(s: string|Uint8Array): boolean {
+  public contains(s: string | Uint8Array): boolean {
     this.throwIfDisposed();
     return this.c.contains(s);
   }
@@ -98,7 +98,7 @@ interface cModule {
   setHashFunction(fn: number): void;
   Bloom: {
     create(pec: number, dfpp: number): cBloom;
-    decode(pec: number, dfpp: number, value: string|Uint8Array): cBloom;
+    decode(pec: number, dfpp: number, value: string | Uint8Array): cBloom;
   };
   addFunction(fn: Function, typ: string): number;
   _free(ptr: number): void;
@@ -110,6 +110,6 @@ interface cModule {
 interface cBloom {
   encode(): number;
   clear(): void;
-  insert(s: string|Uint8Array): void;
-  contains(s: string|Uint8Array): boolean;
+  insert(s: string | Uint8Array): void;
+  contains(s: string | Uint8Array): boolean;
 }
