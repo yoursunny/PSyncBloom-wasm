@@ -1,7 +1,8 @@
 // @ts-check
-const test = require("ava").default;
-const murmurHash3 = require("murmurhash3js-revisited");
-const { BloomFilter } = require(".");
+import test from "ava";
+import murmurHash3 from "murmurhash3js-revisited";
+
+import { BloomFilter } from "./main.js";
 
 /** @type {import(".").HashFunction} */
 function hash(seed, input) {

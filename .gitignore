@@ -1,13 +1,10 @@
+/.vscode/
 /*.tgz
-/.vscode
 /bloom.js
 /bloom.wasm
 /emsdk-cache
 /main.d.ts
 /main.js
-/node_modules
-/package
-/package-lock.json
 /pnpm-lock.yaml
-/web.js
-/web.wasm
+/web.*
+node_modules/
