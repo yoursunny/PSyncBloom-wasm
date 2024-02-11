@@ -5,8 +5,7 @@ namespace ndn {
 
 template<typename... T>
 void
-printHex(const T&...)
-{}
+printHex(const T&...) {}
 
 } // namespace ndn
 
