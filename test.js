@@ -1,5 +1,7 @@
 // @ts-check
-import test from "ava";
+import assert from "node:assert/strict";
+import { test } from "node:test";
+
 import murmurHash3 from "murmurhash3js-revisited";
 
 import { BloomFilter } from "./main.js";
@@ -9,7 +11,7 @@ function hash(seed, input) {
   return murmurHash3.x86.hash32(input, seed);
 }
 
-test("simple", async (t) => {
+test("simple", async () => {
   const bfA = await BloomFilter.create({
     hash,
     projectedElementCount: 100,
@@ -20,10 +22,10 @@ test("simple", async (t) => {
   bfA.insert(new Uint8Array());
   bfA.insert(Uint8Array.of(0x00, 0xBE, 0xEF));
 
-  t.true(bfA.contains("string 0"));
-  t.true(bfA.contains("string 1"));
-  t.true(bfA.contains(new Uint8Array()));
-  t.true(bfA.contains(Uint8Array.of(0x00, 0xBE, 0xEF)));
+  assert(bfA.contains("string 0"));
+  assert(bfA.contains("string 1"));
+  assert(bfA.contains(new Uint8Array()));
+  assert(bfA.contains(Uint8Array.of(0x00, 0xBE, 0xEF)));
 
   let nFalsePositives = 0;
   for (let i = 2; i < 20; ++i) {
@@ -35,50 +37,24 @@ test("simple", async (t) => {
       ++nFalsePositives;
     }
   }
-  t.true(nFalsePositives < 2);
+  assert(nFalsePositives < 2);
 
   const wireA = bfA.encode();
-  bfA.dispose();
-  t.throws(() => bfA.clear());
-
   const bfB = await BloomFilter.create({
     hash,
     projectedElementCount: 100,
     falsePositiveProbability: 0.001,
   }, wireA);
-  t.true(bfB.contains("string 0"));
-  t.true(bfB.contains(Uint8Array.of(0x00, 0xBE, 0xEF)));
+  assert(bfB.contains("string 0"));
+  assert(bfB.contains(Uint8Array.of(0x00, 0xBE, 0xEF)));
   bfB.clear();
-  t.false(bfB.contains("string 0"));
-  t.false(bfB.contains(Uint8Array.of(0x00, 0xBE, 0xEF)));
-  bfB.dispose();
+  assert(!bfB.contains("string 0"));
+  assert(!bfB.contains(Uint8Array.of(0x00, 0xBE, 0xEF)));
 
   const bfC = await BloomFilter.create({
     hash,
     projectedElementCount: 2000,
     falsePositiveProbability: 0.001,
   });
-  t.not(bfC.encode().length, wireA.length);
-  bfC.dispose();
-});
-
-test("memory leak", async (t) => {
-  const filters = [];
-  for (let i = 0; i < 100; ++i) {
-    filters.push(await BloomFilter.create({
-      hash,
-      projectedElementCount: 100,
-      falsePositiveProbability: 0.001,
-    }));
-
-    while (filters.length >= 5) {
-      filters.shift().dispose();
-    }
-
-    t.assert(process.listenerCount("unhandledRejection") <= process.getMaxListeners());
-  }
-
-  while (filters.length > 0) {
-    filters.shift().dispose();
-  }
+  assert.notEqual(bfC.encode().length, wireA.length);
 });

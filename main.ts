@@ -1,5 +1,5 @@
 // @ts-expect-error emscripten build output has no typing
-import openWasmModule from "./bloom.js";
+import Module from "./bloom.js";
 
 /** 32-bit hash function. */
 export type HashFunction = (seed: number, input: Uint8Array) => number;
@@ -26,36 +26,32 @@ export class BloomFilter {
    * @returns Promise that resolves to BloomFilter instance.
    */
   public static async create(p: Parameters, wire?: Uint8Array): Promise<BloomFilter> {
-    const module = await openWasmModule(undefined);
+    const module = await Module(undefined);
     return new BloomFilter(p, module, wire);
   }
 
-  /** Dispose this instance to prevent memory leak. */
+  /** @deprecated No longer needed. */
   public dispose(): void {
-    this.disposed ||= true;
+    //
   }
 
   /** Clear the Bloom filter. */
   public clear(): void {
-    this.throwIfDisposed();
     this.c.clear();
   }
 
   /** Insert a value to the Bloom filter. */
   public insert(s: string | Uint8Array): void {
-    this.throwIfDisposed();
     this.c.insert(s);
   }
 
   /** Determine whether the Bloom filter probably contains a value. */
   public contains(s: string | Uint8Array): boolean {
-    this.throwIfDisposed();
     return this.c.contains(s);
   }
 
   /** Serialize the Bloom filter. */
   public encode(): Uint8Array {
-    this.throwIfDisposed();
     const ptr = this.c.encode();
     const size = this.m.HEAPU32[ptr / 4];
     const b = this.m.HEAPU8.slice(ptr + 4, ptr + 4 + size);
@@ -74,13 +70,6 @@ export class BloomFilter {
   }
 
   private readonly c: cBloom;
-  private disposed = false;
-
-  private throwIfDisposed(): void {
-    if (this.disposed) {
-      throw new Error("invalid operation on disposed BloomFilter instance");
-    }
-  }
 
   private readonly hashFunction = (resultPtr: number, seedPtr: number, inputPtr: number, inputSize: number): void => {
     const seed = this.m.HEAPU32[seedPtr / 4];
